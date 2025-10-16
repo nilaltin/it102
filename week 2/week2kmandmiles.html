@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 2: Kilometers and Miles Converter</title>
+</head>
+<body>
+    <h1>Week 2: Kilometers ↔ Miles Converter</h1>
+    <p><strong>Purpose:</strong> This program uses JavaScript conditional statements to convert distances between kilometers and miles. The user selects the type of conversion, enters a value, and receives the calculated result.</p>
+    <p id="output"></p>
+
+    <script>
+        /*
+        Author: Nil Altinordu
+        Course: IT 102 – Week 2 Lab
+        Purpose: This program asks the user whether they want to convert
+        kilometers to miles or miles to kilometers, then performs the conversion
+        using if, else if, and else statements.
+        */
+
+        // Ask user for conversion choice
+        let choice = prompt("Type 'K' to convert from kilometers to miles, or 'M' to convert from miles to kilometers:");
+
+        // Reference to the output paragraph
+        let output = document.getElementById("output");
+
+        // Conditional logic based on user input
+        if (choice === "K" || choice === "k") {
+            let km = parseFloat(prompt("Enter the distance in kilometers:"));
+            let miles = km * 0.621371;
+            output.innerHTML = `${km} kilometers is equal to ${miles.toFixed(2)} miles.`;
+            alert(`${km} kilometers is equal to ${miles.toFixed(2)} miles.`);
+        } 
+        else if (choice === "M" || choice === "m") {
+            let miles = parseFloat(prompt("Enter the distance in miles:"));
+            let km = miles / 0.621371;
+            output.innerHTML = `${miles} miles is equal to ${km.toFixed(2)} kilometers.`;
+            alert(`${miles} miles is equal to ${km.toFixed(2)} kilometers.`);
+        } 
+        else {
+            output.innerHTML = "Invalid choice! Please type 'K' or 'M'.";
+            alert("Invalid choice! Please type 'K' or 'M'.");
+        }
+    </script>
+</body>
+</html>
