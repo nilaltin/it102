@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ASCII Square Drawer</title>
+  <script>
+    function drawSquare() {
+      let size = parseInt(prompt("Enter a square size between 3 and 30:"));
+      
+      // Keep prompting until a valid number is entered
+      while (size < 3 || size > 30) {
+        size = parseInt(prompt("Invalid input! Please enter a number between 3 and 30:"));
+      }
+
+      let square = "";
+
+      // Build the square line by line
+      for (let i = 0; i < size; i++) {
+        square += "*".repeat(size) + "<br>";
+      }
+
+      // Display on the web page
+      document.getElementById("output").innerHTML = square;
+    }
+  </script>
+</head>
+<body>
+  <h1>ASCII Square Drawer</h1>
+  <button onclick="drawSquare()">Draw Square</button>
+  <hr>
+  <div id="output" style="font-family: monospace;"></div>
+</body>
+</html>
