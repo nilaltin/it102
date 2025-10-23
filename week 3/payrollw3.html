@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOTD 3_3 - Payroll</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    h1 { margin-bottom: 0.25rem; }
+    form input { margin: 4px 0 10px 0; }
+    .stub { margin-top: 16px; padding: 16px; border: 1px solid #ddd; border-radius: 8px; max-width: 560px; }
+    .stub h3 { margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; }
+    td { padding: 6px 4px; vertical-align: top; }
+    td.label { color: #333; width: 55%; }
+    td.value { text-align: right; width: 45%; font-variant-numeric: tabular-nums; }
+    .muted { color: #666; }
+  </style>
+  <script>
+    // ----- Constants -----
+    const HOURLY_RATE = 19.00;
+    const OVERTIME_MULTIPLIER = 1.5;
+    const REGULAR_HOURS = 40;
+    const SS_RATE = 0.062;       // Social Security 6.2%
+    const MEDICARE_RATE = 0.0145;// Medicare 1.45%
+    const ALLOWANCE_AMOUNT = 77.90;
+    const WITHHOLDING_RATE = 0.20; // 20%
+
+    // ----- Helpers -----
+    function toMoney(n) {
+      return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // ----- Calculations (match your pseudocode) -----
+    function calculateGrossPay(hoursWorked) {
+      if (hoursWorked <= REGULAR_HOURS) {
+        return hoursWorked * HOURLY_RATE;
+      } else {
+        const overtimeHours = hoursWorked - REGULAR_HOURS;
+        const regularPay = REGULAR_HOURS * HOURLY_RATE;
+        const overtimePay = overtimeHours * HOURLY_RATE * OVERTIME_MULTIPLIER;
+        return regularPay + overtimePay;
+      }
+    }
+
+    function calculateSocialSecurity(grossPay) {
+      return grossPay * SS_RATE;
+    }
+
+    function calculateMedicare(grossPay) {
+      return grossPay * MEDICARE_RATE;
+    }
+
+    function calculateWithholding(grossPay, allowances) {
+      const withholdingBase = allowances * ALLOWANCE_AMOUNT;
+      const taxableIncome = Math.max(0, grossPay - withholdingBase); // clamp at 0 so it never goes negative
+      return taxableIncome * WITHHOLDING_RATE;
+    }
+
+    function calculateNetPay(grossPay, socialSecurity, medicare, withholding) {
+      return grossPay - socialSecurity - medicare - withholding;
+    }
+
+    // ----- Output -----
+    function generatePaystub(employeeName, hoursWorked, allowances) {
+      const grossPay = calculateGrossPay(hoursWorked);
+      const ss = calculateSocialSecurity(grossPay);
+      const medicare = calculateMedicare(grossPay);
+      const withholding = calculateWithholding(grossPay, allowances);
+      const netPay = calculateNetPay(grossPay, ss, medicare, withholding);
+
+      const stubEl = document.getElementById("payrollStub");
+      stubEl.innerHTML = `
+        <div class="stub">
+          <h3>Payroll Stub</h3>
+          <div class="muted">Ajax Inc. • Weekly Payroll</div>
+          <table>
+            <tr><td class="label"><strong>Employee Name</strong></td><td class="value">${employeeName}</td></tr>
+            <tr><td class="label">Hours Worked</td><td class="value">${hoursWorked.toFixed(2)}</td></tr>
+            <tr><td class="label">Withholding Allowances</td><td class="value">${allowances}</td></tr>
+            <tr><td class="label"><strong>Gross Pay</strong></td><td class="value"><strong>$${toMoney(grossPay)}</strong></td></tr>
+            <tr><td class="label">Social Security (6.2%)</td><td class="value">-$${toMoney(ss)}</td></tr>
+            <tr><td class="label">Medicare (1.45%)</td><td class="value">-$${toMoney(medicare)}</td></tr>
+            <tr><td class="label">Withholding (20% after allowances)</td><td class="value">-$${toMoney(withholding)}</td></tr>
+            <tr><td class="label"><strong>Net Pay</strong></td><td class="value"><strong>$${toMoney(netPay)}</strong></td></tr>
+          </table>
+        </div>
+      `;
+    }
+
+    // ----- Main driver -----
+    function main() {
+      const first = document.getElementById("firstName").value.trim();
+      const last = document.getElementById("lastName").value.trim();
+      const hoursStr = document.getElementById("hoursWorked").value.trim();
+      const allowancesStr = document.getElementById("allowances").value.trim();
+
+      // Basic validation
+      const hours = parseFloat(hoursStr);
+      const allowances = parseInt(allowancesStr, 10);
+
+      if (!first || !last) {
+        alert("Please enter first and last name.");
+        return;
+      }
+      if (isNaN(hours) || hours < 0) {
+        alert("Please enter a valid non-negative number for hours worked.");
+        return;
+      }
+      if (isNaN(allowances) || allowances < 0) {
+        alert("Please enter a valid non-negative whole number for allowances.");
+        return;
+      }
+
+      const fullName = `${first} ${last}`;
+      generatePaystub(fullName, hours, allowances);
+    }
+  </script>
+</head>
+
+<body>
+  <h1>SOTD 3_3 - Payroll</h1>
+  <hr />
+
+  <form name="employeeForm" onsubmit="return false;">
+    First Name: <br />
+    <input type="text" id="firstName" /><br />
+    Last Name: <br />
+    <input type="text" id="lastName" /><br />
+    Enter Hours Worked: <br />
+    <input type="text" id="hoursWorked" placeholder="e.g., 38 or 46.5" /><br />
+    Enter number of withholding allowances: <br />
+    <input type="text" id="allowances" placeholder="0, 1, 2, ..." /><br /><br />
+    <input type="button" value="Submit" onclick="main()" />
+  </form>
+
+  <div id="payrollStub"></div>
+</body>
+</html>
