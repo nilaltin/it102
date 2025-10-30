@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Grocery List</title>
+  </head>
+  <body>
+    <h2>Grocery List</h2>
+    
+    <!-- Instruction above the text box -->
+    <label for="groceryInput">Enter grocery items separated by commas:</label>
+    <br>
+    <textarea id="groceryInput" rows="3" cols="40" placeholder='Example: milk, bread, apples'></textarea>
+    <br>
+    <button onclick="createGroceryList()">Create Grocery List</button>
+    <p><pre id="groceryList"></pre></p>
+    <p>Total items: <span id="totalItems"></span></p>
+
+    <script>
+      function createGroceryList() {
+        // Get input from textarea
+        let input = document.getElementById("groceryInput").value.trim();
+
+        // Check for empty input
+        if (input === "") {
+          alert("Please enter grocery items");
+          return;
+        }
+
+        // Split input string into array (by commas)
+        let groceryItems = input.split(",");
+
+        // Trim whitespace from each item
+        for (let i = 0; i < groceryItems.length; i++) {
+          groceryItems[i] = groceryItems[i].trim();
+        }
+
+        // Sort grocery items alphabetically
+        groceryItems.sort();
+
+        // Display grocery list with numbering (1., 2., 3., etc.)
+        let displayList = "";
+        for (let i = 0; i < groceryItems.length; i++) {
+          displayList += (i + 1) + ". " + groceryItems[i] + "\n";
+        }
+
+        document.getElementById("groceryList").innerText = displayList;
+
+        // Display total number of items
+        document.getElementById("totalItems").innerText = groceryItems.length;
+      }
+    </script>
+  </body>
+</html>

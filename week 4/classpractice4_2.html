@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Let's Make a Deal</title>
+  </head>
+  <body>
+    <h1>Let's Make a Deal</h1>
+    <hr>
+    <p>Choose a door:</p>
+    
+    <!-- Door selection dropdown -->
+    <select id="doorSelection">
+      <option value="0">Select a Door</option>
+      <option value="1">Door #1</option>
+      <option value="2">Door #2</option>
+      <option value="3">Door #3</option>
+    </select>
+
+    <!-- Button to reveal prize -->
+    <button onclick="doorPrize()">Select</button>
+
+    <!-- Output area -->
+    <p id="prize">Good Luck!</p>
+
+    <script>
+      function doorPrize() {
+        // Literal object storing prizes (key-value pairs)
+        let prizes = {
+          door1: "a brand new car!",
+          door2: "a funny goat!",
+          door3: "a shiny pencil!"
+        };
+
+        // Get the user's choice from the dropdown
+        let userChoice = document.getElementById("doorSelection").value;
+
+        // Determine which prize to display
+        let message = "";
+
+        if (userChoice == 1) {
+          message = "Your prize is " + prizes.door1;
+        } else if (userChoice == 2) {
+          message = "Your prize is " + prizes.door2;
+        } else if (userChoice == 3) {
+          message = "Your prize is " + prizes.door3;
+        } else {
+          message = "Please select a door first!";
+        }
+
+        // Display result using innerHTML (keeps form on the page)
+        document.getElementById("prize").innerHTML = message;
+      }
+    </script>
+  </body>
+</html>
