@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Card Object Example</title>
+</head>
+<body>
+  <h2>Card Object Demo</h2>
+  <div id="output"></div>
+
+  <script>
+    // Constructor function for the Card object
+    function Card(suit, rank) {
+      // Assign properties from parameters
+      this.suit = suit;
+      this.rank = rank;
+      // Initially, the card is hidden
+      this.isVisible = false;
+
+      // Method to show the card (make visible)
+      this.show = function() {
+        this.isVisible = true;
+      };
+
+      // Method to hide the card (make hidden)
+      this.hide = function() {
+        this.isVisible = false;
+      };
+    }
+
+    // Create two card objects
+    let card1 = new Card("Hearts", "Ace");
+    let card2 = new Card("Spades", "King");
+
+    // Function to display cards to the webpage
+    function displayCards() {
+      let output = `
+        <p>Card 1 → Suit: ${card1.suit}, Rank: ${card1.rank}, Visible: ${card1.isVisible}</p>
+        <p>Card 2 → Suit: ${card2.suit}, Rank: ${card2.rank}, Visible: ${card2.isVisible}</p>
+      `;
+      document.getElementById("output").innerHTML += output + "<hr>";
+    }
+
+    // Display initial state (hidden)
+    displayCards();
+
+    // Change visibility using show() and hide() methods
+    card1.show();  // make card1 visible
+    card2.hide();  // ensure card2 stays hidden
+
+    // Display updated state
+    displayCards();
+  </script>
+</body>
+</html>

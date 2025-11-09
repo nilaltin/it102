@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Deck of Cards</title>
+</head>
+<body>
+  <h2>Deck of Cards Simulation</h2>
+  <div id="output"></div>
+
+  <script>
+    // Step 1: Define the Card Object
+    function Card(suit, rank) {
+      this.suit = suit;         // Suit: Hearts, Diamonds, Clubs, Spades
+      this.rank = rank;         // Rank: Ace, 2, 3, ... King
+      this.isVisible = false;   // Visibility flag (from SOTD)
+      this.isDealt = false;     // New property to track if dealt
+
+      // Method to show card
+      this.show = function() {
+        this.isVisible = true;
+      };
+
+      // Method to hide card
+      this.hide = function() {
+        this.isVisible = false;
+      };
+    }
+
+    // Step 2: Create the Deck of 52 Cards
+    let suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+    let ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"];
+
+    let deck = []; // empty array to hold all cards
+
+    // Outer loop = suit, Inner loop = rank
+    for (let s = 0; s < suits.length; s++) {
+      for (let r = 0; r < ranks.length; r++) {
+        let card = new Card(suits[s], ranks[r]); // make new Card
+        deck.push(card); // add to deck
+      }
+    }
+
+    // Step 3: Deal Three Random Cards
+    let hand = [];  // array to store dealt cards
+    let cardsDealt = 0; // counter
+
+    // Continue until 3 cards are dealt
+    while (hand.length < 3) {
+      // Generate random number between 0–51
+      let randomIndex = Math.floor(Math.random() * 52);
+      let selectedCard = deck[randomIndex];
+
+      // Only deal if card hasn’t been dealt before
+      if (!selectedCard.isDealt) {
+        selectedCard.isDealt = true; // mark as dealt
+        selectedCard.show();         // make visible
+        hand.push(selectedCard);     // add to hand
+        cardsDealt++;                // increment counter
+      }
+    }
+
+    // Step 4: Display Results
+    let output = "<h3>Dealt Hand (3 Random Cards):</h3>";
+    for (let i = 0; i < hand.length; i++) {
+      output += `<p>${hand[i].rank} of ${hand[i].suit} — Visible: ${hand[i].isVisible}</p>`;
+    }
+
+    output += "<hr>";
+
+    // Step 5: Demonstrate How to Tell If a Card Was Dealt
+    let exampleCard = deck[0]; // Example: Ace of Hearts
+    output += `<p>Has ${exampleCard.rank} of ${exampleCard.suit} been dealt? 
+      <strong>${exampleCard.isDealt ? "Yes" : "No"}</strong></p>`;
+
+    // Show output on the webpage
+    document.getElementById("output").innerHTML = output;
+  </script>
+</body>
+</html>
