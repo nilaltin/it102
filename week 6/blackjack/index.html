@@ -1,0 +1,91 @@
+]<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Game</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script>
+        function startGame() {
+            // Get the text input inside the form named "userForm"
+            const nameInput = document.forms["userForm"].querySelector("input[type='text']");
+            const username = nameInput.value.trim();
+
+            // 1. Validate: not empty
+            if (username === "") {
+                alert("Name cannot be empty.");
+                return;
+            }
+
+            // 2. Validate: only letters (no numbers or special characters)
+            const namePattern = /^[A-Za-z]+$/;
+            if (!namePattern.test(username)) {
+                alert("Name must contain letters only (no numbers or special characters).");
+                return;
+            }
+
+            // If valid, hide the form and show the game area
+            document.getElementById("userForm").style.display = "none";
+            document.getElementById("gameArea").style.display = "block";
+
+            // Show welcome message
+            document.getElementById("welcomeMessage").textContent =
+                "Welcome, " + username + "!";
+        }
+
+        function returnToForm() {
+            // Hide game area, show the form again
+            document.getElementById("gameArea").style.display = "none";
+            document.getElementById("userForm").style.display = "block";
+
+            // Optional: clear welcome and result messages & cards
+            document.getElementById("welcomeMessage").textContent = "";
+            document.getElementById("resultMessage").textContent = "";
+            document.getElementById("dealerCards").innerHTML = "";
+            document.getElementById("playerCards").innerHTML = "";
+        }
+
+        // Placeholder functions so the Hit and Stand buttons don't cause errors.
+        function hit() {
+            alert("Hit button clicked (add your card logic here).");
+        }
+
+        function stand() {
+            alert("Stand button clicked (add your game logic here).");
+        }
+    </script>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Blackjack Game</h1>
+        <form name="userForm" id="userForm" style="display: block;">
+            Enter your name: <input type="text">
+            <input type="button" value="Start Game" onclick="startGame()">
+        </form>
+    </div>
+
+    <div id="gameArea" style="display: none;">
+        <h2 id="welcomeMessage"></h2>
+
+        <div>
+            <h3>Dealer's Cards:</h3>
+            <div id="dealerCards" class="cards"></div>
+        </div>
+
+        <div>
+            <h3>Your Cards:</h3>
+            <div id="playerCards" class="cards"></div>
+        </div>
+
+        <div id="buttons">
+            <button id="hitButton" onclick="hit()">Hit</button>
+            <button id="standButton" onclick="stand()">Stand</button>
+        </div>
+
+        <h3 id="resultMessage"></h3>
+
+        <!-- Button to return to form -->
+        <button onclick="returnToForm()">Return to Form</button>
+    </div>
+</body>
+</html>
