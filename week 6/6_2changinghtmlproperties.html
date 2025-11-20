@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- HTML Table for Testing Purposes -->
+    <table id="myTable" style="border: 10px solid red; font-size: 20px; font-weight: bold">
+      <tr id="row1" style="color: blue">
+        <td id="1.1" style="border: 2px solid black">Row 1 Col 1</td>
+        <td id="1.2" style="border: 2px solid black">Row 1 Col 2</td>
+      </tr>
+    </table>
+
+    <!-- Buttons -->
+    <br><br>
+    <button type="submit" onclick="changeTextColor()">Change Text Color</button>
+    <br><br>
+
+    <button type="submit" onclick="changeFontSize()">Change Font Size</button>
+    <br><br>
+
+    <button type="submit" onclick="changeBorderThickness()">Change Border Thickness</button>
+    <br><br>
+
+    <button type="submit" onclick="changeBorderColor()">Change Border Color</button>
+
+    <script>
+      // 1. Changes text color
+      function changeTextColor(){
+        let textcolor = document.getElementById("row1").style.color;
+        if (textcolor == "green") {
+          textcolor = "blue";
+        } else {
+          textcolor = "green";
+        }
+        document.getElementById("row1").style.color = textcolor;
+      }
+
+      // 2. Changes font size of entire table
+      function changeFontSize(){
+        let table = document.getElementById("myTable");
+        let current = table.style.fontSize;
+
+        if (current == "20px") {
+          table.style.fontSize = "30px";
+        } else {
+          table.style.fontSize = "20px";
+        }
+      }
+
+      // 3. Changes border thickness of entire table
+      function changeBorderThickness(){
+        let table = document.getElementById("myTable");
+        let thickness = table.style.borderWidth;
+
+        if (thickness == "10px") {
+          table.style.borderWidth = "3px";
+        } else {
+          table.style.borderWidth = "10px";
+        }
+      }
+
+      // 4. Changes border color of entire table
+      function changeBorderColor(){
+        let table = document.getElementById("myTable");
+        let color = table.style.borderColor;
+
+        if (color == "red") {
+          table.style.borderColor = "purple";
+        } else {
+          table.style.borderColor = "red";
+        }
+      }
+    </script>
+  </body>
+</html>
