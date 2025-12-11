@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color and Memory Experiment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 40px auto;
+            line-height: 1.5;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #numbersDisplay {
+            margin: 20px 0;
+            min-height: 40px;
+        }
+
+        .number {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .color-number {
+            color: red;
+            font-weight: bold;
+        }
+
+        #responseSection {
+            margin: 15px 0;
+        }
+
+        #responseInput {
+            width: 100%;
+            padding: 8px;
+            font-size: 1rem;
+        }
+
+        #controlButton {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        #feedback, #finalResults {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Color and Memory Experiment</h1>
+
+<p id="instructions">
+    Click "Start experiment" to begin. You will see a list of numbers, then be asked to recall them.
+</p>
+
+<div id="numbersDisplay"></div>
+
+<div id="responseSection" style="display: none;">
+    <label for="responseInput">
+        Type the numbers you remember (separate with spaces or commas):
+    </label>
+    <input type="text" id="responseInput" placeholder="e.g., 3 7 12 19">
+</div>
+
+<button id="controlButton">Start experiment</button>
+
+<div id="feedback"></div>
+<div id="finalResults"></div>
+
+<script>
+    // Trial constructor object
+    function Trial(conditionName) {
+        this.conditionName = conditionName;
+        this.numbersList = [];
+        this.userResponses = [];
+        this.percentCorrect = 0;
+    }
+
+    // Generate unique random integers
+    function generateRandomNumbers(count, minValue, maxValue) {
+        const result = [];
+        while (result.length < count) {
+            const n = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+            if (!result.includes(n)) {
+                result.push(n);
+            }
+        }
+        return result;
+    }
+
+    // Display numbers for each trial
+    function displayNumbers(trial) {
+        const container = document.getElementById("numbersDisplay");
+        container.innerHTML = "";
+
+        const numbers = trial.numbersList;
+        const half = Math.floor(numbers.length / 2);
+
+        for (let i = 0; i < numbers.length; i++) {
+            const span = document.createElement("span");
+            span.textContent = numbers[i];
+            span.classList.add("number");
+
+            if (trial.conditionName === "Color" && i < half) {
+                span.classList.add("color-number");
+            }
+
+            container.appendChild(span);
+        }
+    }
+
+    // Validate and parse user recall input
+    function parseResponses(inputString) {
+        const tokens = inputString.split(/[\s,]+/).filter(Boolean);
+        const responses = [];
+
+        if (tokens.length === 0) {
+            return { valid: false, values: [], error: "Please enter at least one number." };
+        }
+
+        for (let token of tokens) {
+            const n = Number(token);
+
+            if (!Number.isInteger(n) || n < 1 || n > 25) {
+                return {
+                    valid: false,
+                    values: [],
+                    error: "Please enter only whole numbers between 1 and 25."
+                };
+            }
+
+            if (!responses.includes(n)) {
+                responses.push(n);
+            }
+        }
+
+        return { valid: true, values: responses, error: "" };
+    }
+
+    // Compute percent correct
+    function calculatePercentCorrect(targetNumbers, userNumbers) {
+        let correctCount = 0;
+
+        for (let num of userNumbers) {
+            if (targetNumbers.includes(num)) {
+                correctCount++;
+            }
+        }
+
+        return (correctCount / targetNumbers.length) * 100;
+    }
+
+    // Experiment variables
+    const trials = [];
+    let currentTrialIndex = 0;
+    let appState = "beforeStart";
+
+    const instructionsEl = document.getElementById("instructions");
+    const numbersDisplayEl = document.getElementById("numbersDisplay");
+    const responseSectionEl = document.getElementById("responseSection");
+    const responseInputEl = document.getElementById("responseInput");
+    const controlButtonEl = document.getElementById("controlButton");
+    const feedbackEl = document.getElementById("feedback");
+    const finalResultsEl = document.getElementById("finalResults");
+
+    // Start experiment
+    function startExperiment() {
+        const trialBW = new Trial("Black & White");
+        const trialColor = new Trial("Color");
+
+        trialBW.numbersList = generateRandomNumbers(12, 1, 25);
+        trialColor.numbersList = generateRandomNumbers(12, 1, 25);
+
+        trials.push(trialBW, trialColor);
+
+        currentTrialIndex = 0;
+        finalResultsEl.textContent = "";
+        feedbackEl.textContent = "";
+
+        beginStudyPhase();
+    }
+
+    // Show numbers for a trial
+    function beginStudyPhase() {
+        appState = "studying";
+        responseSectionEl.style.display = "none";
+        responseInputEl.value = "";
+        feedbackEl.textContent = "";
+
+        const trial = trials[currentTrialIndex];
+
+        instructionsEl.textContent =
+            "Trial " + (currentTrialIndex + 1) + " (" + trial.conditionName + "): Study the numbers.";
+
+        displayNumbers(trial);
+
+        controlButtonEl.textContent = "I'm ready to recall";
+    }
+
+    // Show recall input box
+    function beginRecallPhase() {
+        appState = "recalling";
+        numbersDisplayEl.innerHTML = "";
+        responseSectionEl.style.display = "block";
+        responseInputEl.value = "";
+
+        const trial = trials[currentTrialIndex];
+
+        instructionsEl.textContent =
+            "Type the numbers you remember from the " + trial.conditionName + " trial.";
+
+        controlButtonEl.textContent = "Submit responses";
+    }
+
+    // Handle recall submission
+    function handleRecallSubmission() {
+        const trial = trials[currentTrialIndex];
+        const inputString = responseInputEl.value.trim();
+        const parsed = parseResponses(inputString);
+
+        if (!parsed.valid) {
+            alert(parsed.error);
+            return;
+        }
+
+        trial.userResponses = parsed.values;
+        trial.percentCorrect =
+            calculatePercentCorrect(trial.numbersList, trial.userResponses);
+
+        const correctCount = Math.round(
+            (trial.percentCorrect / 100) * trial.numbersList.length
+        );
+
+        feedbackEl.textContent =
+            "You recalled " + correctCount + " out of " +
+            trial.numbersList.length + " numbers (" +
+            trial.percentCorrect.toFixed(1) + "%).";
+
+        currentTrialIndex++;
+
+        if (currentTrialIndex < trials.length) {
+            controlButtonEl.textContent = "Next trial";
+            instructionsEl.textContent = "Click Next trial to continue.";
+            appState = "nextTrial";
+        } else {
+            showFinalResults();
+            appState = "finished";
+            controlButtonEl.textContent = "Run again";
+        }
+    }
+
+    // Final comparison output
+    function showFinalResults() {
+        const trialBW = trials.find(t => t.conditionName === "Black & White");
+        const trialColor = trials.find(t => t.conditionName === "Color");
+
+        let summary = "";
+        summary += "Black & White: " + trialBW.percentCorrect.toFixed(1) + "%\n";
+        summary += "Color: " + trialColor.percentCorrect.toFixed(1) + "%\n\n";
+
+        if (trialColor.percentCorrect > trialBW.percentCorrect) {
+            summary += "Color improved recall.";
+        } else if (trialColor.percentCorrect < trialBW.percentCorrect) {
+            summary += "Black & White resulted in better recall.";
+        } else {
+            summary += "Recall was the same for both.";
+        }
+
+        finalResultsEl.textContent = summary;
+        instructionsEl.textContent = "Experiment complete.";
+        responseSectionEl.style.display = "none";
+        numbersDisplayEl.innerHTML = "";
+    }
+
+    // Button controller
+    controlButtonEl.addEventListener("click", function () {
+        if (appState === "beforeStart") {
+            startExperiment();
+        } else if (appState === "studying") {
+            beginRecallPhase();
+        } else if (appState === "recalling") {
+            handleRecallSubmission();
+        } else if (appState === "nextTrial") {
+            beginStudyPhase();
+        } else if (appState === "finished") {
+            trials.length = 0;
+            currentTrialIndex = 0;
+            appState = "beforeStart";
+            controlButtonEl.textContent = "Start experiment";
+            instructionsEl.textContent =
+                "Click Start experiment to run again.";
+            feedbackEl.textContent = "";
+            finalResultsEl.textContent = "";
+        }
+    });
+</script>
+
+</body>
+</html>
